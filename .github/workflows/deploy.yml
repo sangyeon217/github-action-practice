@@ -49,8 +49,13 @@ jobs:
               run: npm ci
             
             - name: Build Client
-              run: npm run build
-            
+              working-directory: ./client
+              run: |
+                TIMESTAMP=$(date +%Y%m%d%H%M%S)
+                BUILD_DIR="build-$TIMESTAMP"
+                BUILD_PATH=$BUILD_DIR npm run build
+                ln -sfn $BUILD_DIR build
+              
             - name: Generate Swagger Documentation
               working-directory: ./server
               run: node docs/swagger.js
