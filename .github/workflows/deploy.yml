@@ -65,3 +65,7 @@ jobs:
             
             - name: Save PM2 process list
               run: pm2 save
+            
+            - name: Cleanup old builds
+              working-directory: ./client
+              run: find . -type d -name "build-*" -mtime +7 | xargs -r rm -rf
