@@ -43,6 +43,6 @@ const EXPRESS_PORT = process.env.EXPRESS_PORT || 5001;
 
 app.set('port', EXPRESS_PORT);
 
-app.listen(app.get('port'), () => {
+app.listen(app.get('port'), '0.0.0.0', () => {
     console.log(`Server listening on http://${EXPRESS_HOST}:${app.get('port')}`);
 });
