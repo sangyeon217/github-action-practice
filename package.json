@@ -1,0 +1,12 @@
+{
+  "name": "github-action-practice",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "npm start --prefix client run build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
