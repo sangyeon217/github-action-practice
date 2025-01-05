@@ -1,0 +1,58 @@
+name: Deploy Test
+
+on:
+    push:
+        branches:
+            - main
+
+jobs:
+    deploy:
+        runs-on: self-hosted
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+            
+            - name: Set up Node.js
+              uses: actions/setup-node@v3
+              with:
+                node-version: 20
+            
+            - name: Install Server Dependencies
+              working-directory: ./server
+              run: npm ci
+            
+            - name: Check if PM2 process exists
+              id: pm2-check
+              run: |
+                if pm2 describe express-app > /dev/null 2>&1; then
+                  echo "PM2_STATUS=EXISTS" >> $GITHUB_ENV
+                else
+                  echo "PM2_STATUS=NOT_FOUND" >> $GITHUB_ENV
+                fi
+            
+            - name: Start PM2 process if not running
+              working-directory: ./server
+              if: env.PM2_STATUS == 'NOT_FOUND'
+              run: pm2 start index.js --name express-app
+
+            - name: Restart PM2 process
+              if: env.PM2_STATUS == 'EXISTS'
+              run: pm2 restart express-app
+            
+            - name: Install Client
+              working-directory: ./client
+              run: npm ci
+            
+            - name: Build Client
+              run: npm run build
+            
+            - name: Generate Swagger Documentation
+              working-directory: ./server
+              run: node docs/swagger.js
+            
+            - name: Deploy Server
+              run: pm2 restart express-app
+            
+            - name: Save PM2 process list
+              run: pm2 save
